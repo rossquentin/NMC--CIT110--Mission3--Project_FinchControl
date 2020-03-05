@@ -84,7 +84,7 @@ namespace Project_FinchControl
                         break;
 
                     case "b":
-                        DisplayTalentShowMenuScreen(finchRobot);
+                        TalentShowDisplayMenuScreen(finchRobot);
                         break;
 
                     case "c":
@@ -125,7 +125,7 @@ namespace Project_FinchControl
         /// *                     Talent Show Menu                          *
         /// *****************************************************************
         /// </summary>
-        static void DisplayTalentShowMenuScreen(Finch myFinch)
+        static void TalentShowDisplayMenuScreen(Finch myFinch)
         {
             Console.CursorVisible = true;
 
@@ -140,9 +140,8 @@ namespace Project_FinchControl
                 // get user menu choice
                 //
                 Console.WriteLine("\ta) Light and Sound");
-                Console.WriteLine("\tb) Movement");
-                Console.WriteLine("\tc) ");
-                Console.WriteLine("\td) ");
+                Console.WriteLine("\tb) Dance");
+                Console.WriteLine("\tc) Mixing it Up");
                 Console.WriteLine("\tq) Main Menu");
                 Console.Write("\t\tEnter Choice:");
                 menuChoice = Console.ReadLine().ToLower();
@@ -153,19 +152,15 @@ namespace Project_FinchControl
                 switch (menuChoice)
                 {
                     case "a":
-                        DisplayLightAndSound(myFinch);
+                        TalentShowDisplayLightAndSound(myFinch);
                         break;
 
                     case "b":
-                        DisplayMovement(myFinch);
+                        TalentShowDisplayDance(myFinch);
                         break;
 
                     case "c":
-
-                        break;
-
-                    case "d":
-
+                        TalentShowDisplayMixingItUp(myFinch);
                         break;
 
                     case "q":
@@ -188,31 +183,90 @@ namespace Project_FinchControl
         /// *****************************************************************
         /// </summary>
         /// <param name="finchRobot">finch robot object</param>
-        static void DisplayLightAndSound(Finch finchRobot)
+        static void TalentShowDisplayLightAndSound(Finch finchRobot)
         {
             Console.CursorVisible = false;
 
             DisplayScreenHeader("Light and Sound");
 
-            Console.WriteLine("\tThe Finch robot will not show off its glowing talent!");
+            Console.WriteLine("\tThe Finch robot will now show off its glowing talent!");
             DisplayContinuePrompt();
 
             for (int lightSoundLevel = 0; lightSoundLevel < 255; lightSoundLevel++)
             {
                 finchRobot.setLED(lightSoundLevel, lightSoundLevel, lightSoundLevel);
-                finchRobot.noteOn(lightSoundLevel * 100);
+                finchRobot.noteOn(lightSoundLevel);
             }
+
+            for (int lightSoundLevel = 255; lightSoundLevel > 0; lightSoundLevel--)
+            {
+                finchRobot.setLED(255, lightSoundLevel, lightSoundLevel);
+            }
+
+            for (int lightSoundLevel = 255; lightSoundLevel > 0; lightSoundLevel--)
+            {
+                finchRobot.setLED(lightSoundLevel, 0, 0);
+                finchRobot.noteOn(lightSoundLevel);
+            }
+
+            DisplayMenuPrompt("Talent Show Menu");
+            finchRobot.noteOff();
+            finchRobot.setLED(0, 0, 0);
+        }
+
+
+        static void TalentShowDisplayDance(Finch finchRobot)
+        {
+            DisplayScreenHeader("Dance");
+
+            Console.WriteLine("\tThe Finch robot will now show off its dancing talent!");
+            DisplayContinuePrompt();
+
+            for (int lines = 0; lines < 8; lines++)
+            {
+                finchRobot.setMotors(200, 200);
+                finchRobot.wait(1000);
+                finchRobot.setMotors(200, -200);
+                finchRobot.wait(400);
+            }
+            finchRobot.setMotors(0, 0);
 
             DisplayMenuPrompt("Talent Show Menu");
         }
 
-        static void DisplayMovement(Finch finch)
-        {
-            DisplayScreenHeader("Movement");
 
-            finch.setMotors(200, 200);
-            finch.wait(1000);
-            finch.setMotors(0, 0);
+        static void TalentShowDisplayMixingItUp(Finch finchRobot)
+        {
+            DisplayScreenHeader("Mixing it Up");
+
+            Console.WriteLine("\tThe Finch robot will now begin mixing it up!");
+            DisplayContinuePrompt();
+
+            finchRobot.noteOff();
+            for (int lines = 0; lines < 8; lines++)
+            {
+                finchRobot.setLED(255, 0, 0);
+                finchRobot.noteOn(912);
+                finchRobot.setMotors(200, 200);
+                finchRobot.wait(1000);
+
+                finchRobot.setLED(0, 0, 255);
+                finchRobot.noteOn(635);
+                finchRobot.setMotors(-200, -200);
+                finchRobot.wait(1000);
+
+                finchRobot.setLED(255, 0, 0);
+                finchRobot.noteOn(912);
+                finchRobot.setMotors(200, -200);
+                finchRobot.wait(400);
+
+                finchRobot.setMotors(0, 0);
+                finchRobot.wait(600);
+
+                finchRobot.setLED(0, 0, 255);
+                finchRobot.noteOn(635);
+                finchRobot.wait(1000);
+            }
         }
 
         #endregion
@@ -328,7 +382,7 @@ namespace Project_FinchControl
         static void DisplayMenuPrompt(string menuName)
         {
             Console.WriteLine();
-            Console.WriteLine($"\tPress any key to return to the {menuName} Menu.");
+            Console.WriteLine($"\tPress any key to return to the {menuName}.");
             Console.ReadKey();
         }
 
