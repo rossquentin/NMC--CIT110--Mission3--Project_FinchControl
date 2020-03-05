@@ -276,8 +276,9 @@ namespace Project_FinchControl
         static void DataRecorderDisplayMenuScreen(Finch finchRobot)
         {
             int numberOfDataPoints = 0;
-            double dataPointFrequency;
-            double[] temperatures = { 0 };
+            double dataPointFrequency = 0;
+            double[] data = { 0 };
+            string dataType;
 
             Console.CursorVisible = true;
 
@@ -291,10 +292,11 @@ namespace Project_FinchControl
                 //
                 // get user menu choice
                 //
-                Console.WriteLine("\ta) Number of Data Points");
-                Console.WriteLine("\tb) Frequency of Data Points");
-                Console.WriteLine("\tc) Get Data");
-                Console.WriteLine("\td) Show Data");
+                Console.WriteLine("\ta) Data Collection Type");
+                Console.WriteLine("\tb) Number of Data Points: {0}", numberOfDataPoints);
+                Console.WriteLine("\tc) Frequency of Data Points: {0}", dataPointFrequency/1000);
+                Console.WriteLine("\td) Get Data");
+                Console.WriteLine("\te) Show Data");
                 Console.WriteLine("\tq) Main Menu");
                 Console.Write("\t\tEnter Choice:");
                 menuChoice = Console.ReadLine().ToLower();
@@ -305,19 +307,22 @@ namespace Project_FinchControl
                 switch (menuChoice)
                 {
                     case "a":
+                        dataType = DataRecorderDisplayGetDataType();
+                        break;
+                    case "b":
                         numberOfDataPoints = DataRecorderDisplayGetNumbeOfDataPoints();
                         break;
 
-                    case "b":
+                    case "c":
                         dataPointFrequency = DataRecorderDisplayGetDataPointFrequency();
                         break;
 
-                    case "c":
+                    case "d":
                         DataRecorderDisplayGetData(numberOfDataPoints, dataPointFrequency, finchRobot);
                         break;
 
-                    case "d":
-                        DataRecorderDisplayShowData(temperatures);
+                    case "e":
+                        DataRecorderDisplayShowData(data);
                         break;
                     case "q":
                         quitMenu = true;
@@ -331,6 +336,59 @@ namespace Project_FinchControl
                 }
 
             } while (!quitMenu);
+        }
+
+        static string DataRecorderDisplayGetDataType()
+        {
+            string dataType = "";
+
+            Console.CursorVisible = true;
+
+            bool quitMenu = false;
+            string menuChoice;
+
+            do
+            {
+                DisplayScreenHeader("Data Collection Type Menu");
+
+                //
+                // get user menu choice
+                //
+                Console.WriteLine("\ta) Temperature");
+                Console.WriteLine("\tb) Acceleration");
+                Console.WriteLine("\tc) Light");
+                Console.WriteLine("\tq) Main Menu");
+                Console.Write("\t\tEnter Choice:");
+                menuChoice = Console.ReadLine().ToLower();
+
+                //
+                // process user menu choice
+                //
+                switch (menuChoice)
+                {
+                    case "a":
+                        dataType = "temp";
+                        break;
+                    case "b":
+                        dataType = "accel";
+                        break;
+                    case "c":
+                        dataType = "light";
+                        break;
+                    case "q":
+                        quitMenu = true;
+                        break;
+
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("\tPlease enter a letter for the menu choice.");
+                        DisplayContinuePrompt();
+                        break;
+                }
+
+            } while (!quitMenu);
+
+            return dataType;
         }
 
         private static void DataRecorderDisplayShowData(double[] data)
@@ -362,15 +420,31 @@ namespace Project_FinchControl
 
                 DisplayContinuePrompt();                
             } while (!isValid);
-            
-
 
             return numberOfDataPoints;
         }
 
-        static void DataRecorderDisplayGetDataPointFrequency()
+        static double DataRecorderDisplayGetDataPointFrequency()
         {
-            throw new NotImplementedException();
+
+            double dataPointFrequency;
+            bool isValid = true;
+            do
+            {
+                DisplayScreenHeader("Number of Data Points");
+
+                Console.Write("\tEnter how often (in seconds) you would like to check for data points: ");
+                isValid = double.TryParse(Console.ReadLine(), out dataPointFrequency);
+
+                if (!isValid)
+                {
+                    Console.WriteLine("\tPlease enter an integer or decimal response.");
+                }
+
+                DisplayContinuePrompt();
+            } while (!isValid);
+
+            return dataPointFrequency * 1000;
         }
 
         #endregion
