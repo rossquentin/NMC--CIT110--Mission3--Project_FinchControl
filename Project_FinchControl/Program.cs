@@ -21,6 +21,7 @@ namespace Project_FinchControl
 
     class Program
     {
+        #region MAIN
         /// <summary>
         /// first method run when the app starts up
         /// </summary>
@@ -117,7 +118,8 @@ namespace Project_FinchControl
 
             } while (!quitApplication);
         }
-
+        #endregion
+        
         #region TALENT SHOW
 
         /// <summary>
