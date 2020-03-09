@@ -445,7 +445,7 @@ namespace Project_FinchControl
                 for (int i = 0; i < numberOfDataPoints; i++)
                 {
                     dataArr[i] = finchRobot.getTemperature();
-                    Console.WriteLine("Temperature Reading {0}: {1}", i+1 ,dataArr[i].ToString("n2");
+                    Console.WriteLine("Temperature Reading {0}: {1}", i+1 ,dataArr[i].ToString("n2"));
                     finchRobot.wait(waitInMilliseconds);
                 }
             }
@@ -454,7 +454,7 @@ namespace Project_FinchControl
                 for (int i = 0; i < numberOfDataPoints; i++)
                 {
                     dataArr[i] = (finchRobot.getRightLightSensor() + finchRobot.getLeftLightSensor()) / 2;
-                    Console.WriteLine("Light Reading {0}: {1}", i + 1, dataArr[i].ToString("n2");
+                    Console.WriteLine("Light Reading {0}: {1}", i + 1, dataArr[i].ToString("n2"));
                     finchRobot.wait(waitInMilliseconds);
                 }
             }
@@ -522,6 +522,7 @@ namespace Project_FinchControl
         }
 
         #endregion
+
         #region FINCH ROBOT MANAGEMENT
 
         /// <summary>
