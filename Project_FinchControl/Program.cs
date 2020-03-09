@@ -398,7 +398,22 @@ namespace Project_FinchControl
 
             return dataType;
         }
+        /// <summary>
+        /// converts celsius temp to fahrenheit
+        /// </summary>
+        /// <param name="temp">input temp</param>
+        /// <returns>temp in fahrenheit</returns>
+        static double DataRecorderDisplayConvertCelsiusToFahrenheit(double temp)
+        {
+            temp = (temp * 9 / 5) + 32;
+            return temp;
+        }
 
+        /// <summary>
+        /// creates a table for all data recorded
+        /// </summary>
+        /// <param name="dataArr"> array for all data </param>
+        /// <param name="dataType"> type of data recorded </param>
         static void DataRecorderDisplayShowData(double[] dataArr, string dataType)
         {
             DisplayScreenHeader("Show Data");
@@ -421,8 +436,32 @@ namespace Project_FinchControl
                );
             }
 
+            Console.WriteLine("\n\tAverage: {0}", DataRecorderDisplayGetAverage(dataArr).ToString("n2"));
+
             DisplayContinuePrompt();
         }
+
+        /// <summary>
+        /// computes the average given an array
+        /// </summary>
+        /// <param name="dataArr"> array to calculate an average </param>
+        /// <returns> average of all data points </returns>
+        static double DataRecorderDisplayGetAverage(double[] dataArr)
+        {
+            double average = 0;
+            double sum = 0;
+
+            for (int i = 0; i < dataArr.Length; i++)
+            {
+                sum += dataArr[i];
+            }
+
+            average = sum / dataArr.Length;
+
+            return average;
+        }
+
+
 
         /// <summary>
         /// gets the data from the robot with all parameters given from user
@@ -451,6 +490,7 @@ namespace Project_FinchControl
                 for (int i = 0; i < numberOfDataPoints; i++)
                 {
                     dataArr[i] = finchRobot.getTemperature();
+                    dataArr[i] = DataRecorderDisplayConvertCelsiusToFahrenheit(dataArr[i]);
                     Console.WriteLine("Temperature Reading {0}: {1}", i+1 ,dataArr[i].ToString("n2"));
                     finchRobot.wait(waitInMilliseconds);
                 }
