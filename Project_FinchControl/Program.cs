@@ -365,6 +365,7 @@ namespace Project_FinchControl
                 //
                 Console.WriteLine("\ta) Temperature");
                 Console.WriteLine("\tb) Light");
+                Console.WriteLine("\tq) Data Recorder Menu");
                 Console.Write("\t\tEnter Choice:");
                 menuChoice = Console.ReadLine().ToLower();
 
@@ -379,6 +380,9 @@ namespace Project_FinchControl
                         break;
                     case "b":
                         dataType = "light";
+                        quitMenu = true;
+                        break;
+                    case "q":
                         quitMenu = true;
                         break;
                     default:
