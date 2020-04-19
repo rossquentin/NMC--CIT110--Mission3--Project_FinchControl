@@ -93,6 +93,7 @@ namespace Project_FinchControl
                         break;
 
                     case "d":
+                        LightAlarmDisplayMenuScreen(finchRobot);
 
                         break;
 
@@ -118,8 +119,10 @@ namespace Project_FinchControl
 
             } while (!quitApplication);
         }
-        #endregion
+
         
+        #endregion
+
         #region TALENT SHOW
 
         /// <summary>
@@ -566,6 +569,103 @@ namespace Project_FinchControl
 
             return dataPointFrequency;
         }
+
+        #endregion
+
+        #region ALARM SYSTEM
+        private static void LightAlarmDisplayMenuScreen(Finch finchRobot)
+        {
+            Console.CursorVisible = true;
+
+            bool quitTalentShowMenu = false;
+            string menuChoice;
+            string sensorsToMonitor;
+            string rangeType;
+            int mixMaxThresholdValue;
+            int timeToMonitor;
+
+            do
+            {
+                DisplayScreenHeader("Alarm System Menu");
+
+                //
+                // get user menu choice
+                //
+                Console.WriteLine("\ta) Set Senors to Monitor");
+                Console.WriteLine("\tb) Set Range Type");
+                Console.WriteLine("\tc) Set Minimum/Maximum Threshold Values");
+                Console.WriteLine("\td) Set Time to Monitor");
+                Console.WriteLine("\te) Set Alarm");
+                Console.WriteLine("\tq) Main Menu");
+                Console.Write("\t\tEnter Choice:");
+                menuChoice = Console.ReadLine().ToLower();
+
+                //
+                // process user menu choice
+                //
+                switch (menuChoice)
+                {
+                    case "a":
+                        sensorsToMonitor = LightAlarmDisplaySetSensorsToMonitor();
+                        break;
+
+                    case "b":
+                        ;
+                        break;
+
+                    case "c":
+                        ;
+                        break;
+
+                    case "d":
+                        ;
+                        break;
+
+                    case "e":
+                        ;
+                        break;
+
+                    case "q":
+                        quitTalentShowMenu = true;
+                        break;
+
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("\tPlease enter a letter for the menu choice.");
+                        DisplayContinuePrompt();
+                        break;
+                }
+
+            } while (!quitTalentShowMenu);
+        }
+
+        private static string LightAlarmDisplaySetSensorsToMonitor()
+        {
+            string sensorsToMonitor;
+
+            DisplayScreenHeader("Sensors To Monitor");
+
+            Console.Write("\tSensors to Monitor (left, right, both): ");
+            sensorsToMonitor = Console.ReadLine();
+
+            DisplayMenuPrompt("Alarm System");
+            return sensorsToMonitor;
+        }
+
+        private static string LightAlarmDisplaySetRangeType()
+        {
+            string rangeType;
+
+            DisplayScreenHeader("Range Type");
+
+            Console.Write("\tRange Type (minimum, maximum): ");
+            rangeType = Console.ReadLine();
+
+            DisplayMenuPrompt("Alarm System");
+            return rangeType;
+        }
+
+
 
         #endregion
 
