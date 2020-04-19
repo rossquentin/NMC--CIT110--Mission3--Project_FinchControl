@@ -33,6 +33,7 @@ namespace Project_FinchControl
         GETTEMPURATURE,
         DONE
     }
+
     class Program
     {
         #region MAIN
@@ -657,6 +658,10 @@ namespace Project_FinchControl
             } while (!quitTalentShowMenu);
         }
 
+        /// <summary>
+        /// Gives user opportunity to enter which light sensor to monitor
+        /// </summary>
+        /// <returns></returns>
         private static string AlarmSystemDisplaySetSensorsToMonitor()
         {
             string sensorsToMonitor;
@@ -688,6 +693,10 @@ namespace Project_FinchControl
             return sensorsToMonitor;
         }
 
+        /// <summary>
+        /// Allows user to set the range type from minimum or maximum
+        /// </summary>
+        /// <returns></returns>
         private static string AlarmSystemDisplaySetRangeType()
         {
             string rangeType;
@@ -719,6 +728,12 @@ namespace Project_FinchControl
             return rangeType.ToUpper();
         }
 
+        /// <summary>
+        /// Sets the threshold bounds for monitoring
+        /// </summary>
+        /// <param name="rangeType"></param>
+        /// <param name="finchRobot"></param>
+        /// <returns></returns>
         private static int AlarmSystemDisplaySetMinMaxThresholdValue(string rangeType, Finch finchRobot)
         {
             int minMaxThresholdValue;
@@ -751,6 +766,10 @@ namespace Project_FinchControl
             return minMaxThresholdValue;
         }
 
+        /// <summary>
+        /// Sets the time limit to continue monitoring
+        /// </summary>
+        /// <returns></returns>
         private static int AlarmSystemDisplaySetTimeToMonitor()
         {
             DisplayScreenHeader("Set Time to Monitor");
@@ -774,6 +793,14 @@ namespace Project_FinchControl
             return timeToMonitor;
         }
 
+        /// <summary>
+        /// Executes the alarm system commands
+        /// </summary>
+        /// <param name="sensorsToMonitor"></param>
+        /// <param name="rangeType"></param>
+        /// <param name="minMaxThresholdValue"></param>
+        /// <param name="timeToMonitor"></param>
+        /// <param name="finchRobot"></param>
         private static void AlarmSystemDisplaySetAlarm(string sensorsToMonitor, string rangeType, int minMaxThresholdValue, int timeToMonitor, Finch finchRobot)
         {
             int secondsElapsed = 0;
@@ -825,6 +852,12 @@ namespace Project_FinchControl
             DisplayMenuPrompt("Alarm System");
         }
 
+        /// <summary>
+        /// Gets all light sensor values depending on which sensor user selected to monitor
+        /// </summary>
+        /// <param name="finchRobot"></param>
+        /// <param name="sensorsToMonitor"></param>
+        /// <returns></returns>
         private static int AlarmSystemDisplayGetLightSensorValue(Finch finchRobot, string sensorsToMonitor)
         {
             int currentLightSensorValue = 0;
@@ -862,6 +895,7 @@ namespace Project_FinchControl
             commandParameters.waitSeconds = 0;
 
             List<Command> commands = new List<Command>();
+            int userProfile = 1;
 
             do
             {
@@ -870,10 +904,13 @@ namespace Project_FinchControl
                 //
                 // get user menu choice
                 //
-                Console.WriteLine("\ta) Set Command Parameters");
-                Console.WriteLine("\tb) Add Commands");
-                Console.WriteLine("\tc) View Commands");
-                Console.WriteLine("\td) Execute Commands");
+                Console.WriteLine("\ta) Select User Profile");
+                Console.WriteLine("\tb) Load User Profile (Profile: {0})", userProfile);
+                Console.WriteLine("\tc) Save User Profile (Profile: {0})", userProfile);
+                Console.WriteLine("\td) Set Command Parameters");
+                Console.WriteLine("\te) Add Commands");
+                Console.WriteLine("\tf) View Commands");
+                Console.WriteLine("\tg) Execute Commands");
                 Console.WriteLine("\tq) Main Menu");
                 Console.Write("\t\tEnter Choice:");
                 menuChoice = Console.ReadLine().ToLower();
@@ -884,18 +921,30 @@ namespace Project_FinchControl
                 switch (menuChoice)
                 {
                     case "a":
+                        userProfile = UserProgrammingDisplayGetUserProfile();
+                        break;
+                    case "b":
+                        UserProgrammingDisplayShowLoadScreen(userProfile);
+                        commandParameters = UserProgrammingDisplayReadUserParameterProfile(2);
+                        commands = UserProgrammingDisplayReadUserCommandProfile(2);
+                        break;
+                    case "c":
+                        UserProgrammingDisplayShowSaveScreen(userProfile);
+                        UserProgrammingDisplayWriteUserProfile(userProfile, commands, commandParameters);
+                        break;
+                    case "d":
                         commandParameters = UserProgrammingDisplayGetCommandParameters();
                         break;
 
-                    case "b":
+                    case "e":
                         UserProgrammingDisplayGetFinchCommands(commands);
                         break;
 
-                    case "c":
-                        UserProgrammingDisplayFinchCommands(commands);
+                    case "f":
+                        UserProgrammingDisplayFinchCommands(commands, commandParameters);
                         break;
 
-                    case "d":
+                    case "g":
                         UserProgrammingDisplayExecuteCommands(finchRobot, commands, commandParameters);
                         break;
                     case "q":
@@ -912,6 +961,37 @@ namespace Project_FinchControl
             } while (!quitTalentShowMenu);
         }
 
+        /// <summary>
+        /// Gives user feedback that program is saving
+        /// </summary>
+        /// <param name="userProfile">user profile</param>
+        private static void UserProgrammingDisplayShowSaveScreen(int userProfile)
+        {
+            DisplayScreenHeader("Save Profile");
+
+            Console.Write("\tSaving to profile {0}... ", userProfile);
+            Console.WriteLine();
+
+            DisplayMenuPrompt("User Programming");
+        }
+        /// <summary>
+        /// Gives user feedback that program is loading
+        /// </summary>
+        /// <param name="userProfile">user profile</param>
+        private static void UserProgrammingDisplayShowLoadScreen(int userProfile)
+        {
+            DisplayScreenHeader("Load Profile");
+
+            Console.Write("\tLoading profile {0}... ", userProfile);
+            Console.WriteLine();
+
+            DisplayMenuPrompt("User Programming");
+        }
+
+        /// <summary>
+        /// Gets command parameters from the user
+        /// </summary>
+        /// <returns></returns>
         private static (int motorSpeed, int ledBrightness, double waitSeconds) UserProgrammingDisplayGetCommandParameters()
         {
             DisplayScreenHeader("Command Parameters");
@@ -926,15 +1006,40 @@ namespace Project_FinchControl
             GetValidDouble("\tEnter Wait in Seconds (0-10): ", 0, 10, out commandParameters.waitSeconds);
 
             Console.WriteLine();
-            Console.WriteLine("Motor Speed: {0}", commandParameters.motorSpeed);
-            Console.WriteLine("LED Brightness: {0}", commandParameters.ledBrightness);
-            Console.WriteLine("Wait command duration {0}", commandParameters.waitSeconds);
+            Console.WriteLine("\tMotor Speed: {0}", commandParameters.motorSpeed);
+            Console.WriteLine("\tLED Brightness: {0}", commandParameters.ledBrightness);
+            Console.WriteLine("\tWait command duration {0}", commandParameters.waitSeconds);
 
             DisplayMenuPrompt("User Programming");
 
             return commandParameters;
         }
 
+        /// <summary>
+        /// Gets the profile the user wish's to use from the user
+        /// </summary>
+        /// <returns></returns>
+        static int UserProgrammingDisplayGetUserProfile()
+        {
+            int userProfile;
+            bool isValidInput = true;
+
+            do
+            {
+                DisplayScreenHeader("User Profile");
+
+                GetValidInteger("\tEnter Profile Number (1-3): ", 1, 3, out userProfile);
+            } while (!isValidInput);
+
+
+            DisplayMenuPrompt("User Programming");
+            return userProfile;
+        }
+
+        /// <summary>
+        /// Gets the commands the user wish's to use
+        /// </summary>
+        /// <param name="commands"></param>
         private static void UserProgrammingDisplayGetFinchCommands(List<Command> commands)
         {
             Command command = Command.NONE;
@@ -973,9 +1078,20 @@ namespace Project_FinchControl
             DisplayMenuPrompt("User Programming");
         }
 
-        private static void UserProgrammingDisplayFinchCommands(List<Command> commands)
+        /// <summary>
+        /// Displays the commands for the user to view
+        /// </summary>
+        /// <param name="commands"></param>
+        /// <param name="commandParameters"></param>
+        private static void UserProgrammingDisplayFinchCommands(List<Command> commands, (int motorSpeed, int ledBrightness, double waitSeconds) commandParameters)
         {
             DisplayScreenHeader("Finch Robot Command Viewer");
+
+            Console.WriteLine("\tMotor Speed: {0}", commandParameters.motorSpeed);
+            Console.WriteLine("\tLED Brightness: {0}", commandParameters.ledBrightness);
+            Console.WriteLine("\tWait command duration {0}", commandParameters.waitSeconds);
+
+            Console.WriteLine("\t\nCommands");
 
             foreach (Command command in commands)
             {
@@ -985,6 +1101,12 @@ namespace Project_FinchControl
             DisplayMenuPrompt("User Programming");
         }
 
+        /// <summary>
+        /// Executes the commands given to by the user in previous steps
+        /// </summary>
+        /// <param name="finchRobot"></param>
+        /// <param name="commands"></param>
+        /// <param name="commandParameters"></param>
         private static void UserProgrammingDisplayExecuteCommands(Finch finchRobot, List<Command> commands, (int motorSpeed, int ledBrightness, double waitSeconds) commandParameters)
         {
 
@@ -1055,6 +1177,77 @@ namespace Project_FinchControl
                 Console.WriteLine("\t{0}", commandFeedback);
             }
         }
+
+        /// <summary>
+        /// Reads data from text file for command parameter data
+        /// </summary>
+        /// <param name="userProfile"></param>
+        /// <returns></returns>
+        static (int motorSpeed, int ledBrightness, double waitSeconds) UserProgrammingDisplayReadUserParameterProfile(int userProfile)
+        {
+            string dataPath = @"Data\User" + userProfile + ".txt";
+            string[] dataCommands;
+
+            (int motorSpeed, int ledBrightness, double waitSeconds) commandParameters;
+
+
+            dataCommands = File.ReadAllLines(dataPath);
+
+            commandParameters.motorSpeed = int.Parse(dataCommands[0]);
+            commandParameters.ledBrightness = int.Parse(dataCommands[1]);
+            commandParameters.waitSeconds = double.Parse(dataCommands[2]);
+
+            return commandParameters;
+        }
+
+        /// <summary>
+        /// Reads data from text file for command list data
+        /// </summary>
+        /// <param name="userProfile"></param>
+        /// <returns></returns>
+        static List<Command> UserProgrammingDisplayReadUserCommandProfile(int userProfile)
+        {
+            string dataPath = @"Data\User" + userProfile + ".txt";
+
+            
+            string[] dataCommands;
+
+            dataCommands = File.ReadAllLines(dataPath);
+            List<Command> commands = new List<Command>();
+
+            
+
+            for (int i = 3; i < dataCommands.Length; i++)
+            {
+                commands.Add((Command) Enum.Parse(typeof(Command), dataCommands[i]));
+            }
+            return commands;
+        }
+
+        /// <summary>
+        /// Writes data to text file including command parameter and list data
+        /// </summary>
+        /// <param name="userProfile"></param>
+        /// <param name="commands"></param>
+        /// <param name="commandParameters"></param>
+        static void UserProgrammingDisplayWriteUserProfile(int userProfile, List<Command> commands, (int motorSpeed, int ledBrightness, double waitSeconds) commandParameters)
+        {
+            string dataPath = @"Data\User" + userProfile +".txt";
+
+            string[] commandArray = new string[commands.Count];
+
+            for (int i = 0; i < commandArray.Length; i++)
+            {
+                commandArray[i] = commands[i].ToString();
+
+            }
+
+            File.WriteAllText(dataPath, commandParameters.motorSpeed.ToString() + "\n");
+            File.AppendAllText(dataPath, commandParameters.ledBrightness.ToString() + "\n");
+            File.AppendAllText(dataPath, commandParameters.waitSeconds.ToString() + "\n");
+            File.AppendAllLines(dataPath, commandArray);
+        }
+
 
         #endregion
 
