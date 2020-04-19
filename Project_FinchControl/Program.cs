@@ -739,7 +739,23 @@ namespace Project_FinchControl
 
         private static int AlarmSystemDisplaySetTimeToMonitor()
         {
+            DisplayScreenHeader("Set Time to Monitor");
             int timeToMonitor = 0;
+            bool isValidInput;
+
+            do
+            {
+                Console.Write("\tEnter the time to monitor the light sensors in seconds: ");
+                isValidInput = int.TryParse(Console.ReadLine(), out timeToMonitor);
+
+                if (!isValidInput || timeToMonitor <= 0)
+                {
+                    Console.WriteLine("\tPlease enter a positive non-zero integer value");
+                    DisplayContinuePrompt();
+                }
+            } while (!isValidInput);
+
+            DisplayMenuPrompt("Alarm System");
 
             return timeToMonitor;
         }
@@ -747,7 +763,7 @@ namespace Project_FinchControl
         private static void AlarmSystemDisplaySetAlarm(string sensorsToMonitor, string rangeType, int minMaxThresholdValue, int timeToMonitor, Finch finchRobot)
         {
             int secondsElapsed = 0;
-            int currentLightSensorValue;
+            int currentLightSensorValue = 0;
             bool thresholdExceeded = false;
 
             DisplayScreenHeader("Set Alarm");
@@ -780,8 +796,18 @@ namespace Project_FinchControl
                         }
                         break;
                 }
+                finchRobot.wait(1000);
+                secondsElapsed++;
             }
 
+            if(thresholdExceeded)
+            {
+                Console.WriteLine("\tThe {0} threshold value was exceeded by the current light sensor of {1}", rangeType.ToUpper(), currentLightSensorValue);
+            }
+            else
+            {
+                Console.WriteLine("\tThe {0} threshold value of {1} was not exceeded.", rangeType.ToUpper(),minMaxThresholdValue);
+            }
             DisplayMenuPrompt("Alarm System");
         }
 
