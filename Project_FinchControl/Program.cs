@@ -30,6 +30,8 @@ namespace Project_FinchControl
         TURNLEFT,
         LEDON,
         LEDOFF,
+        SOUNDON,
+        SOUNDOFF,
         GETTEMPURATURE,
         DONE
     }
@@ -606,7 +608,7 @@ namespace Project_FinchControl
                 //
                 // get user menu choice
                 //
-                Console.WriteLine("\ta) Set Senors to Monitor");
+                Console.WriteLine("\ta) Set Sensors to Monitor");
                 Console.WriteLine("\tb) Set Range Type");
                 Console.WriteLine("\tc) Set Minimum/Maximum Threshold Values");
                 Console.WriteLine("\td) Set Time to Monitor");
@@ -1160,6 +1162,16 @@ namespace Project_FinchControl
 
                     case Command.LEDOFF:
                         finchRobot.setLED(0, 0, 0);
+                        commandFeedback = Command.LEDOFF.ToString();
+                        break;
+
+                    case Command.SOUNDON:
+                        finchRobot.noteOn(261);
+                        commandFeedback = Command.LEDOFF.ToString();
+                        break;
+
+                    case Command.SOUNDOFF:
+                        finchRobot.noteOff();
                         commandFeedback = Command.LEDOFF.ToString();
                         break;
 
